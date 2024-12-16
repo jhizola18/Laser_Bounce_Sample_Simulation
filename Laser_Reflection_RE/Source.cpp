@@ -13,7 +13,7 @@ Simulation Laser_Simulation = Simulation();
 
 
 int main() {
-
+	
 	while (!window.isWindowClose()) {
 		Laser_Simulation.MainSimulation();
 		Laser_Simulation.MovementSimulation();

@@ -6,6 +6,7 @@
 class LaserManager {
 private:
 	Laser* Anchor_Laser;
+
 public:
 	LaserManager();
 	~LaserManager();
@@ -13,7 +14,7 @@ public:
 	Laser* addLaser(Vector2 Start, Vector2 End, RayCollision rayhits, float thickness, Color colors);
 	void Draw();
 	void AnchorMovement();
-
+	int objectCount;
 	Laser* GetAnchor_Laser();
 
 };
