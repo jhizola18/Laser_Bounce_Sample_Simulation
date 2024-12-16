@@ -1,0 +1,7 @@
+﻿  LaserManager.cpp
+E:\Vs_Community_Projects\Game_Projects\Laser_Reflection_RE\Laser_Reflection_RE\LaserManager.cpp(22,2): error C2280: 'std::unique_ptr<Laser,std::default_delete<Laser>>::unique_ptr(const std::unique_ptr<Laser,std::default_delete<Laser>> &)': attempting to reference a deleted function
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\memory(3451,5):
+      see declaration of 'std::unique_ptr<Laser,std::default_delete<Laser>>::unique_ptr'
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.42.34433\include\memory(3451,5):
+      'std::unique_ptr<Laser,std::default_delete<Laser>>::unique_ptr(const std::unique_ptr<Laser,std::default_delete<Laser>> &)': function was explicitly deleted
+  
