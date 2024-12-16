@@ -33,4 +33,44 @@ void Laser::Draw()
 	DrawLineEx(laser_startpos, laser_endpos, laser_thickness, laser_color);
 }
 
+void Laser::SetStartPos(Vector2 start)
+{
+	StartPos = start;
+}
+
+void Laser::SetEndPos(Vector2 end)
+{
+	EndPos = end;
+}
+
+Vector2 Laser::GetStartPos()
+{
+	return StartPos;
+}
+
+Vector2 Laser::GetEndPos()
+{
+	return EndPos;
+}
+
+void Laser::SetCollision(RayCollision rayhits)
+{
+	rayhit = rayhits;
+}
+
+RayCollision Laser::GetCollision() {
+
+	return rayhit;
+}
+
+float Laser::GetThick() 
+{
+	return thick;
+}
+
+Color Laser::GetColor()
+{
+	return color;
+}
+
 

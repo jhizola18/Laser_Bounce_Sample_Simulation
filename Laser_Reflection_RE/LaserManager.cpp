@@ -25,7 +25,7 @@ Laser* LaserManager::addLaser(Vector2 Start, Vector2 End, RayCollision rayhits, 
 	else {
 		
 		Laser* temptr = Anchor_Laser;
-		while (temptr != NULL) {
+		while (temptr->next != NULL) {
 			
 			temptr = temptr->next;
 		}
@@ -42,16 +42,35 @@ Laser* LaserManager::addLaser(Vector2 Start, Vector2 End, RayCollision rayhits, 
 
 		temptr->next = laser_temptr;
 		laser_temptr->prev = temptr;
-
 		
 	}
 
 	return Anchor_Laser;
 }
-
+//why is this drawing too many objects??????
 void LaserManager::Draw()
 {
+	Laser* temptr = Anchor_Laser;
+
+	while (temptr != NULL) {
+
+		temptr->Draw();
+		temptr = temptr->next;
+	}
+}
+
+void LaserManager::AnchorMovement()
+{
+	if (IsCursorOnScreen()) {
+		float AnchorNewX = GetMousePosition().x - Anchor_Laser->GetStartPos().x;
+		float AnchorNewY = GetMousePosition().y - Anchor_Laser->GetStartPos().y;
+
+		Vector2 NewAnchorPos = {AnchorNewX, AnchorNewY};
+		Anchor_Laser->SetEndPos(Vector2Normalize(NewAnchorPos));
+	}
 	
+
+
 }
 
 Laser* LaserManager::GetAnchor_Laser()

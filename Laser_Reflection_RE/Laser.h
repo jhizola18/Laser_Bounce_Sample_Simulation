@@ -17,19 +17,17 @@ public:
 	Laser(Vector2 Start, Vector2 End, RayCollision rayhits,float thickness, Color colors);
 	void Draw();
 
-	void SetRay(Ray ray);
-	Ray GetRay();
-
-	void SetEndPos(Vector2 Endpos);
+	void SetStartPos(Vector2 start);
+	Vector2 GetStartPos();
+	
+	void SetEndPos(Vector2 end);
 	Vector2 GetEndPos();
 
 	void SetCollision(RayCollision rayhits);
 	RayCollision GetCollision();
 
-	void SetThick(float thick);
 	float GetThick();
 
-	void GetColor(Color color);
 	Color GetColor();
 
 
