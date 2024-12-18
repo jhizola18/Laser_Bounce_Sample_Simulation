@@ -6,7 +6,7 @@
 class LaserManager {
 private:
 	Laser* Anchor_Laser;
-
+	Laser LaserInit;
 public:
 	LaserManager();
 	~LaserManager();

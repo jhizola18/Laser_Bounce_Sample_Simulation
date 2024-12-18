@@ -1,10 +1,11 @@
 #include "Laser.h"
+#include "raymath.h"
 
 Laser::Laser()//default constructor
 {
 	rayhit = {0};
 	StartPos = {0.0f, 0.0f};
-	EndPos = {0.0f, 0.0f};
+	Dir = Vector2Normalize({ 0.0f, 0.0f });
 	thick = 0.0f;
 	color = WHITE;
 	next = NULL;
@@ -12,10 +13,10 @@ Laser::Laser()//default constructor
 
 }
 
-Laser::Laser(Vector2 Start, Vector2 End, RayCollision rayhits, float thickness, Color colors)//parameterized constructor
+Laser::Laser(Vector2 Start, Vector2 direction, RayCollision rayhits, float thickness, Color colors)//parameterized constructor
 {
 	this->StartPos = Start;
-	this->EndPos = End;
+	this->Dir = direction;
 	this->rayhit = rayhits;
 	this->thick = thickness;
 	this->color = colors;
@@ -26,21 +27,22 @@ Laser::Laser(Vector2 Start, Vector2 End, RayCollision rayhits, float thickness, 
 void Laser::Draw()
 {
 	Vector2 laser_startpos = StartPos;
-	Vector2 laser_endpos = EndPos;
+	Vector2 laser_endpos = Dir;
 	Color laser_color = color;
 	float laser_thickness = thick;
 
-	DrawLineEx(laser_startpos, laser_endpos, laser_thickness, laser_color);
+	DrawLineEx(this->StartPos, {this->StartPos.x + this->Dir.x * 10.0f, this->StartPos.y + this->Dir.y * 10.0f }, this->thick, this->color);
 }
+
 
 void Laser::SetStartPos(Vector2 start)
 {
 	StartPos = start;
 }
 
-void Laser::SetEndPos(Vector2 end)
+void Laser::SetDir(Vector2 direction)
 {
-	EndPos = end;
+	Dir = direction;
 }
 
 Vector2 Laser::GetStartPos()
@@ -48,9 +50,9 @@ Vector2 Laser::GetStartPos()
 	return StartPos;
 }
 
-Vector2 Laser::GetEndPos()
+Vector2 Laser::GetDir()
 {
-	return EndPos;
+	return Dir;
 }
 
 void Laser::SetCollision(RayCollision rayhits)

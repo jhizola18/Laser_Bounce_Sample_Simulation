@@ -11,14 +11,16 @@ WindowHandler window{ W_Window, H_Window, FPS_Window, T_Window };
 
 Simulation Laser_Simulation = Simulation();
 
-
 int main() {
 	
 	while (!window.isWindowClose()) {
-		Laser_Simulation.MainSimulation();
+
+		
+		//MovementSimulation causing the bug
 		Laser_Simulation.MovementSimulation();
 		BeginDrawing();
 		ClearBackground(BLACK);
+		
 		Laser_Simulation.DrawSimulation();
 		EndDrawing();
 	}

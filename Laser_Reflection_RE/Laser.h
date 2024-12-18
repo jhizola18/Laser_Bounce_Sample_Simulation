@@ -3,25 +3,19 @@
 #include <memory>
 
 class Laser {
-private:
-	Vector2 StartPos;
-	Vector2 EndPos;
-	RayCollision rayhit;
-	float thick;
-	Color color;
+
 
 	
 
 public:
 	Laser();
-	Laser(Vector2 Start, Vector2 End, RayCollision rayhits,float thickness, Color colors);
+	Laser(Vector2 Start, Vector2 direction, RayCollision rayhits,float thickness, Color colors);
 	void Draw();
-
 	void SetStartPos(Vector2 start);
 	Vector2 GetStartPos();
 	
-	void SetEndPos(Vector2 end);
-	Vector2 GetEndPos();
+	void SetDir(Vector2 direction);
+	Vector2 GetDir();
 
 	void SetCollision(RayCollision rayhits);
 	RayCollision GetCollision();
@@ -32,6 +26,13 @@ public:
 
 
 public:
+
+	Vector2 StartPos;
+	Vector2 Dir;
+	RayCollision rayhit;
+	float thick;
+	Color color;
+
 
 	Laser* next;
 	Laser* prev;
