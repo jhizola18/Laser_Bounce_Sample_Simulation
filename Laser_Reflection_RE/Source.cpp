@@ -1,8 +1,8 @@
 #include "WindowHandler.h"
 #include "Simulation.h"
 
-const int W_Window = 750;
-const int H_Window = 750;
+constexpr int W_Window = 750;
+constexpr int H_Window = 750;
 const int FPS_Window = 74;
 std::string T_Window = "Vector Reflection Simulation";
 
@@ -15,12 +15,9 @@ int main() {
 	
 	while (!window.isWindowClose()) {
 
-		
-		//MovementSimulation causing the bug
 		Laser_Simulation.MovementSimulation();
 		BeginDrawing();
 		ClearBackground(BLACK);
-		
 		Laser_Simulation.DrawSimulation();
 		EndDrawing();
 	}

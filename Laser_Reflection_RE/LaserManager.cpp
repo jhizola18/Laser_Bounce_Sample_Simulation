@@ -8,6 +8,7 @@ LaserManager::LaserManager()
 {
 	Anchor_Laser = NULL;
 	objectCount = 0;
+	InitLaserManager();
 }
 
 LaserManager::~LaserManager() 
@@ -65,8 +66,6 @@ void LaserManager::Draw()
 
 void LaserManager::AnchorMovement()
 {
-	//This is causing the bug
-	//Why its not moving correctly???am i looking at the right problem??????maybe it has something to do with constructor?????,maybe consider the dir
 	if (IsCursorOnScreen()) {
 		
 		std::cout << "Anchor Old X: " << Anchor_Laser->StartPos.x << "\n";
@@ -90,6 +89,18 @@ void LaserManager::AnchorMovement()
 		
 		
 	}
+}
+
+void LaserManager::InitLaserManager()
+{
+	Vector2 start = { GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f };
+	Vector2 end = Vector2Normalize({ 1.0f, 0.0f });
+	float thick = 1.0f;
+	Color color = RED;
+	RayCollision rayhits = { 0 };
+	rayhits.hit = false;
+	Anchor_Laser =  addLaser(start, end, rayhits, thick, color);
+
 }
 
 Laser* LaserManager::GetAnchor_Laser()

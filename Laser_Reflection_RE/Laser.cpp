@@ -26,11 +26,6 @@ Laser::Laser(Vector2 Start, Vector2 direction, RayCollision rayhits, float thick
 
 void Laser::Draw()
 {
-	Vector2 laser_startpos = StartPos;
-	Vector2 laser_endpos = Dir;
-	Color laser_color = color;
-	float laser_thickness = thick;
-
 	DrawLineEx(this->StartPos, {this->StartPos.x + this->Dir.x * 10.0f, this->StartPos.y + this->Dir.y * 10.0f }, this->thick, this->color);
 }
 

@@ -4,9 +4,6 @@
 
 class Laser {
 
-
-	
-
 public:
 	Laser();
 	Laser(Vector2 Start, Vector2 direction, RayCollision rayhits,float thickness, Color colors);
