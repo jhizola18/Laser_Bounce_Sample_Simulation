@@ -1,12 +1,19 @@
 #pragma once
 #include "LaserManager.h"
-
+#include "Obstacle.h"
 
 class Collision {
 private:
 	LaserManager Lasermanager;
 public:
 	Collision();
-	void DetectCollision(LaserManager& Lasermanager);
+	bool DetectCollision(Obstacle& obs, Laser* laser);
+	bool IntersectingLines(Obstacle& obs, Laser& laser );
+	Vector2 PointOfIntersection(Vector2 P1, Vector2 P2, float t, float u);
+
+public:
+
+	float t;
+	float u;
 
 };

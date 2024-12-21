@@ -6,7 +6,7 @@ class Laser {
 
 public:
 	Laser();
-	Laser(Vector2 Start, Vector2 direction, RayCollision rayhits,float thickness, Color colors);
+	Laser(uint64_t id ,Vector2 Start, Vector2 direction, RayCollision rayhits,float thickness, Color colors);
 	void Draw();
 	void SetStartPos(Vector2 start);
 	Vector2 GetStartPos();
@@ -24,6 +24,7 @@ public:
 
 public:
 
+	uint64_t id;
 	Vector2 StartPos;
 	Vector2 Dir;
 	RayCollision rayhit;

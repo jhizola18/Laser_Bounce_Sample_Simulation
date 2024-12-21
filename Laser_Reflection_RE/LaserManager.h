@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 #include "Laser.h"
 #include "raymath.h"
 
@@ -10,11 +11,12 @@ public:
 	LaserManager();
 	~LaserManager();
 
-	Laser* addLaser(Vector2 Start, Vector2 End, RayCollision rayhits, float thickness, Color colors);
+	Laser* addLaser(uint64_t id ,Vector2 Start, Vector2 End, RayCollision rayhits, float thickness, Color colors);
 	void Draw();
 	void AnchorMovement();
 	void InitLaserManager();
 	int objectCount;
 	Laser* GetAnchor_Laser();
+	void SetAnchor_Laser(Laser* Anchor);
 
 };
