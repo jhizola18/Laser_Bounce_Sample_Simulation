@@ -44,10 +44,14 @@ void Simulation::MainSimulation()
 							color = RED;
 							temptr->id = items.Obstacle_id;
 							temptr->rayhit.hit = true;
-							if (laser_manager.objectCount >= 5) {
+							
+							if (laser_manager.objectCount > 10) {
 								break;
 							}
-							laser_manager.SetAnchor_Laser(laser_manager.addLaser(0, PoI, Reflect, rayhits, thickness, color));
+							else {
+								laser_manager.SetAnchor_Laser(laser_manager.addLaser(0, PoI, Reflect, rayhits, thickness, color));
+							}
+							
 							items.active = true;
 							//the id system is now working;
 							std::cout << "\n currID:" << currhit_id << "\n";
@@ -70,6 +74,7 @@ void Simulation::MainSimulation()
 		
 		std::cout << "Next";
 		temptr = temptr->next;
+		
 	} while (temptr != NULL);
 	std::cout << "END of loop\n";
 	//why its not making object here????
