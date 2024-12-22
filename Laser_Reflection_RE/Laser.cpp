@@ -26,9 +26,15 @@ Laser::Laser(uint64_t id, Vector2 Start, Vector2 direction, RayCollision rayhits
 	this->prev = NULL;
 }
 
-void Laser::Draw()
+void Laser::Draw() const
 {
-	DrawLineEx(this->StartPos, {this->StartPos.x + this->Dir.x * 1000.0f, this->StartPos.y + this->Dir.y * 1000.0f }, this->thick, this->color);
+	if (this->rayhit.hit == false) {
+		DrawLineEx(this->StartPos, { this->StartPos.x + this->Dir.x * 1000.0f, this->StartPos.y + this->Dir.y * 1000.0f }, this->thick, this->color);
+	}
+	else {
+		DrawLineEx(this->StartPos, { this->rayhit.point.x, this->rayhit.point.y}, this->thick, this->color);
+	}
+	
 }
 
 
@@ -42,12 +48,12 @@ void Laser::SetDir(Vector2 direction)
 	Dir = direction;
 }
 
-Vector2 Laser::GetStartPos()
+Vector2 Laser::GetStartPos() const
 {
 	return StartPos;
 }
 
-Vector2 Laser::GetDir()
+Vector2 Laser::GetDir() const
 {
 	return Dir;
 }
@@ -57,17 +63,18 @@ void Laser::SetCollision(RayCollision rayhits)
 	rayhit = rayhits;
 }
 
-RayCollision Laser::GetCollision() {
+RayCollision Laser::GetCollision() const
+{
 
 	return rayhit;
 }
 
-float Laser::GetThick() 
+float Laser::GetThick() const
 {
 	return thick;
 }
 
-Color Laser::GetColor()
+Color Laser::GetColor() const
 {
 	return color;
 }

@@ -14,8 +14,10 @@ Simulation Laser_Simulation = Simulation();
 int main() {
 	
 	while (!window.isWindowClose()) {
-
-		Laser_Simulation.MainSimulation();
+		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+			Laser_Simulation.MainSimulation();
+		}
+		
 		Laser_Simulation.MovementSimulation();
 		BeginDrawing();
 		ClearBackground(BLACK);

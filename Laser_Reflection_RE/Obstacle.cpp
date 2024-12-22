@@ -7,6 +7,7 @@ Obstacle::Obstacle()
 	Obstacle_P2 = { 0 };
 	Obstacle_thick = 1.0f;
 	Obstacle_color = WHITE;
+	active = false;
 
 
 }
@@ -18,6 +19,7 @@ Obstacle::Obstacle(uint32_t id, Vector2 p1, Vector2 p2)
 	this->Obstacle_P2 = p2;
 	this->Obstacle_thick = 1.0f;
 	this->Obstacle_color = WHITE;
+	this->active = false;
 }
 
 void Obstacle::Draw()

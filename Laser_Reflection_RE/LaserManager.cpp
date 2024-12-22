@@ -57,6 +57,19 @@ Laser* LaserManager::addLaser(uint64_t id,  Vector2 Start, Vector2 End, RayColli
 	return Anchor_Laser;
 }
 
+Laser* LaserManager::deleteLaser()
+{
+	Laser* temptr = Anchor_Laser;
+	while (temptr != NULL) {
+		
+		temptr = temptr->next;
+	}
+
+
+
+	return Anchor_Laser;
+}
+
 void LaserManager::Draw()
 {
 	Laser* temptr = Anchor_Laser;

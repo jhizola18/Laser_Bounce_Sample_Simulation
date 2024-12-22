@@ -7,19 +7,19 @@ class Laser {
 public:
 	Laser();
 	Laser(uint64_t id ,Vector2 Start, Vector2 direction, RayCollision rayhits,float thickness, Color colors);
-	void Draw();
+	void Draw()const;
 	void SetStartPos(Vector2 start);
-	Vector2 GetStartPos();
+	Vector2 GetStartPos()const;
 	
 	void SetDir(Vector2 direction);
-	Vector2 GetDir();
+	Vector2 GetDir()const;
 
 	void SetCollision(RayCollision rayhits);
-	RayCollision GetCollision();
+	RayCollision GetCollision()const;
 
-	float GetThick();
+	float GetThick()const;
 
-	Color GetColor();
+	Color GetColor()const;
 
 
 public:

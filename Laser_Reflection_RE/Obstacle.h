@@ -16,5 +16,6 @@ public:
 	Vector2 Obstacle_P2;
 	float Obstacle_thick;
 	Color Obstacle_color;
+	bool active;
 
 };
