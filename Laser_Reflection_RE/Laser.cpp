@@ -4,18 +4,20 @@
 Laser::Laser()//default constructor
 {
 	id = 0;
+	currhit_id = 0;
 	rayhit = {0};
 	StartPos = {0.0f, 0.0f};
 	Dir = Vector2Normalize({ 0.0f, 0.0f });
 	thick = 0.0f;
-	color = WHITE;
+	color = RED;
 	next = NULL;
 	prev = NULL;
 
 }
 
-Laser::Laser(uint64_t id, Vector2 Start, Vector2 direction, RayCollision rayhits, float thickness, Color colors)//parameterized constructor
+Laser::Laser(uint32_t id, Vector2 Start, Vector2 direction, RayCollision rayhits, float thickness, Color colors)//parameterized constructor
 {
+	this->currhit_id = 0;
 	this->id = id;
 	this->StartPos = Start;
 	this->Dir = direction;
@@ -31,10 +33,9 @@ void Laser::Draw() const
 	if (this->rayhit.hit == false) {
 		DrawLineEx(this->StartPos, { this->StartPos.x + this->Dir.x * 1000.0f, this->StartPos.y + this->Dir.y * 1000.0f }, this->thick, this->color);
 	}
-	else {
+	else{
 		DrawLineEx(this->StartPos, { this->rayhit.point.x, this->rayhit.point.y}, this->thick, this->color);
 	}
-	
 }
 
 

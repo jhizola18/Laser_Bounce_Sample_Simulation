@@ -6,83 +6,148 @@ LaserManager::LaserManager()
 	:
 	LaserInit()
 {
-	Anchor_Laser = NULL;
+	Anchor_Laser = nullptr;
+	
 	objectCount = 0;
+	objectDrawn = 0;
 	InitLaserManager();
 }
 
 LaserManager::~LaserManager() 
 {
+	Laser* store;
+	Laser* temptr = Anchor_Laser;
+	
+	while (temptr != nullptr) {
+		store = temptr->next;
+		delete temptr; 
+		std::cout << " Node Deleted ";
+		temptr = store;
+	}
+	Anchor_Laser = nullptr;
+	
 }
 
-Laser* LaserManager::addLaser(uint64_t id,  Vector2 Start, Vector2 End, RayCollision rayhits, float thickness, Color colors)
+Laser* LaserManager::addLaser(Vector2 Start, Vector2 End, RayCollision rayhits, float thickness, Color colors)
 {
 	Laser* laser_temptr =  new Laser();
-	if (Anchor_Laser == NULL) {
-	
+	if (Anchor_Laser == nullptr) {
+
 		Anchor_Laser = laser_temptr;
-		
-		laser_temptr->id = id;
+		laser_temptr->prev = nullptr;
+		laser_temptr->id = objectCount  + 1;
 		laser_temptr->StartPos = Start;
 		laser_temptr->Dir = End;
 		laser_temptr->rayhit.hit = rayhits.hit;
 		laser_temptr->thick = thickness;
 		laser_temptr->color = colors;
 		objectCount++;
+	
 		return Anchor_Laser;
-		
-		
-		
 	}else {
 		
 		Laser* temptr = Anchor_Laser;
-		while (temptr->next != NULL) {
+		while (temptr->next != nullptr) {
 			
 			temptr = temptr->next;
 		}
-
 		objectCount++;
-	
 		temptr->next = laser_temptr;
 		laser_temptr->prev = temptr;
-
-		laser_temptr->id = id;
 		laser_temptr->StartPos = Start;
+		if (objectCount > 1) {
+			laser_temptr->id = objectCount;
+		}
 		laser_temptr->Dir = End;
 		laser_temptr->rayhit.hit = rayhits.hit;
 		laser_temptr->thick = thickness;
 		laser_temptr->color = colors;
-
+		return Anchor_Laser;
 	}
-	return Anchor_Laser;
+	
 }
 
-Laser* LaserManager::deleteLaser()
+void LaserManager::deleteLaser(Laser* &Anchor)
 {
-	Laser* temptr = Anchor_Laser;
-	while (temptr != NULL) {
-		
-		temptr = temptr->next;
+	Laser *store, *temp;
+	temp = Anchor;
+	//DELETING NODE WHEN THE ANCHOR NODE COLLIDING TO NOTHING
+	if (temp != nullptr && !Anchor_Laser->rayhit.hit) {
+		//std::cout << "deleting process worked\n";
+		//so the problem with the previous solution was its updating an already deleted pointer and possibly accessing it resulting to undefined behaviour 
+		while (temp->next != nullptr) {
+			//std::cout << " Object deleted: ID-> " << temp->next->id << "\n";
+			store = temp->next;
+			temp->next = store->next;
+			if (store->next != nullptr) {
+				store->next->prev = temp;
+			}
+			std::cout << "Deleted ID: " << store->id << "\n";
+			delete store;
+			std::cout << "\nDeleted all Tail\n";
+			objectCount--;
+		}
 	}
+	else {
+		return;
+		//DELETING NODE WHEN ONE OF THE NODE IS NOT COLLIDING TO ANY OBSTACLE
+		/*Laser* temptr = Anchor;
+			if (temptr != nullptr && temptr->id != 1) {
+				for (uint32_t Node = 0; Node < idtoDelete - 2; ++Node) {
+					if (temptr->next == nullptr) {
+						break;
+					}
+					else {
+						temptr = temptr->next;
+					}
+				}
+					while (temptr->next != nullptr) {
+						store = temptr->next;
+						temptr->next = store->next;
+						//std::cout << " Object deleted:Second Type ID-> " << temptr->id << "\n";
+						//std::cout << "Second type of deleting\n";
+						delete store;
+						std::cout << "\nDeleted in Middle\n";
+						objectCount--;
+					}
+				}
+				else {
+					return;
+				}*/
+	}
+}
 
+void LaserManager::DeleteInChange(uint32_t& currId, uint32_t prevId)
+{
+	if (currId > prevId) {
+		
+		deleteLaser(Anchor_Laser);
 
-
-	return Anchor_Laser;
+	}
+	else {
+		return;
+	}
 }
 
 void LaserManager::Draw()
 {
 	Laser* temptr = Anchor_Laser;
-	std::cout << "\nNodes Created->" << objectCount << "\n";
-	do {
-		if (temptr == NULL) {
+	//std::cout << "\nNodes Created->" << objectCount << "\n";
+	Anchor_Laser->Draw();
+	while (temptr != nullptr) {
+		
+		if (temptr->rayhit.hit == true && temptr->next != nullptr)
+		{
+				//std::cout << "Draw Laser-> " << temptr->id << "\n";
+				temptr->next->Draw();
+				Vector2 PoI = { temptr->rayhit.point.x, temptr->rayhit.point.y };
+				DrawCircleV(PoI, 3.0f, GREEN);
+		}
+		else {
 			break;
 		}
-		temptr->Draw();
 		temptr = temptr->next;
-	} while (temptr != NULL);
-
-	
+	}
 		
 	
 }
@@ -102,17 +167,16 @@ void LaserManager::AnchorMovement()
 
 void LaserManager::InitLaserManager()
 {
-	uint32_t id = 0;
 	Vector2 start = { GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f };
 	Vector2 end = Vector2Normalize({ 1.0f, 0.0f });
-	float thick = 1.0f;
 	Color color = RED;
 	RayCollision rayhits = { 0 };
+	float thick = 1.0f;
 	rayhits.hit = false;
-	Anchor_Laser =  addLaser(id, start, end, rayhits, thick, color);
+	Anchor_Laser = addLaser(start ,end, rayhits, thick, color);
 }
 
-Laser* LaserManager::GetAnchor_Laser()
+Laser* const& LaserManager::GetAnchor_Laser() const
 {
 	return Anchor_Laser;
 }

@@ -10,16 +10,20 @@
 class Simulation {
 private:
 	LaserManager laser_manager;
+	Laser* temp_Anchor;
 	Obstacle obstacle;
 	Collision collisionChecker;
 
 public://functions and methods
 	Simulation();
+	~Simulation()noexcept;
 	void MainSimulation();
 	void DrawSimulation();
+	void DetectChangeCollision();
 	void MovementSimulation();
 
 	std::vector<Obstacle> ShapeCreation();
+	std::vector<uint32_t> prev_Values;
 
 public://containters and variables
 	bool onHit;

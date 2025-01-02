@@ -7,7 +7,7 @@ WindowHandler::WindowHandler(int width, int height, int fps, std::string title)
 	SetTargetFPS(fps);
 }
 
-WindowHandler::~WindowHandler()
+WindowHandler::~WindowHandler() noexcept
 {
 	assert(GetWindowHandle());
 	CloseWindow();

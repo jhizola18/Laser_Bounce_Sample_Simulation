@@ -9,16 +9,16 @@ std::string T_Window = "Vector Reflection Simulation";
 
 WindowHandler window{ W_Window, H_Window, FPS_Window, T_Window };
 
-Simulation Laser_Simulation = Simulation();
+Simulation Laser_Simulation{};
 
 int main() {
+
 	
 	while (!window.isWindowClose()) {
-		if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-			Laser_Simulation.MainSimulation();
-		}
-		
+
+		Laser_Simulation.MainSimulation();
 		Laser_Simulation.MovementSimulation();
+		Laser_Simulation.DetectChangeCollision();
 		BeginDrawing();
 		ClearBackground(BLACK);
 		Laser_Simulation.DrawSimulation();

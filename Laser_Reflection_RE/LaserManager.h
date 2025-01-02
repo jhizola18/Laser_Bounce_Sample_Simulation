@@ -11,13 +11,15 @@ public:
 	LaserManager();
 	~LaserManager();
 
-	Laser* addLaser(uint64_t id ,Vector2 Start, Vector2 End, RayCollision rayhits, float thickness, Color colors);
-	Laser* deleteLaser();
+	Laser* addLaser(Vector2 Start, Vector2 End, RayCollision rayhits, float thickness, Color colors);
+	void deleteLaser(Laser* &Anchor);
+	void DeleteInChange(uint32_t& currId, uint32_t prevId);
 	void Draw();
 	void AnchorMovement();
 	void InitLaserManager();
-	int objectCount;
-	Laser* GetAnchor_Laser();
+	uint32_t objectCount;
+	uint32_t objectDrawn;
+	Laser* const& GetAnchor_Laser() const;
 	void SetAnchor_Laser(Laser* Anchor);
 
 };

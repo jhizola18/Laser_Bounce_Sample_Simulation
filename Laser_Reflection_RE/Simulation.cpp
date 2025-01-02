@@ -5,104 +5,142 @@ Simulation::Simulation()
 	laser_manager(),
 	collisionChecker()
 {
+	temp_Anchor = laser_manager.GetAnchor_Laser();
 	ObstaclesStorage = ShapeCreation();
+	prev_Values = { 0 };
 	prevhit_id = 0;
 	currhit_id = 0;
 	onHit = false;
 }
 
+Simulation::~Simulation() noexcept 
+{
+	temp_Anchor = nullptr;
+}
 void Simulation::MainSimulation() 
 {
-	Laser* temptr = laser_manager.GetAnchor_Laser();
+	Laser* temptr = temp_Anchor;
+	Vector2 Start = { 0 };
 	Vector2 PoI = { 0 };
 	Vector2 P1toP2 = { 0 };
 	Vector2 Reflect = { 0 };
 	RayCollision rayhits = { 0 };
 	float thickness = 0.0f;
 	Color color = WHITE;
-	//create a delete node if there is no collision and find out why its not following the main anchor 
 	do {
 		
-		if (temptr == NULL) {
-			std::cout << "NULL";
+		if (temptr == nullptr) {
 			break;
 		}
-			for (auto& items : ObstaclesStorage) {
+		for (size_t obstacle = 0; obstacle < ObstaclesStorage.size(); ++obstacle) {
+			//Fix it so when the anchor laser moves the other parts moves too :HOW TO FUCKING DO THIS
+			if (collisionChecker.DetectCollision(ObstaclesStorage[obstacle], temptr)) {
+				PoI = collisionChecker.PointOfIntersection(ObstaclesStorage[obstacle].Obstacle_P1, ObstaclesStorage[obstacle].Obstacle_P2, collisionChecker.t, collisionChecker.u);
+				thickness = 1.0f;
+				color = RED;
+				rayhits.point.x = PoI.x;
+				rayhits.point.y = PoI.y;
+				rayhits.hit = false;
 				
-					if (collisionChecker.DetectCollision(items, temptr)) {
-						if (!items.active) {
-							temptr->rayhit.hit = true;
-							std::cout << "\nHit\n";
-							PoI = collisionChecker.PointOfIntersection(items.Obstacle_P1, items.Obstacle_P2, collisionChecker.t, collisionChecker.u);
-							temptr->rayhit.point.x = PoI.x;
-							temptr->rayhit.point.y = PoI.y;
-							P1toP2 = { items.Obstacle_P2.x - items.Obstacle_P1.x, items.Obstacle_P2.y - items.Obstacle_P1.y };
-							DrawCircleV(PoI, 3.0f, GREEN);
-							Reflect = Vector2Reflect(temptr->Dir, Vector2Normalize({ -P1toP2.y, P1toP2.x }));
-							rayhits.hit = false;
-							thickness = 1.0f;
-							color = RED;
-							temptr->id = items.Obstacle_id;
-							temptr->rayhit.hit = true;
-							
-							if (laser_manager.objectCount > 10) {
-								break;
-							}
-							else {
-								laser_manager.SetAnchor_Laser(laser_manager.addLaser(0, PoI, Reflect, rayhits, thickness, color));
-							}
-							
-							items.active = true;
-							//the id system is now working;
-							std::cout << "\n currID:" << currhit_id << "\n";
-							std::cout << "\n prevID:" << prevhit_id << "\n";
-							prevhit_id = currhit_id;
-							
-						}
-						else {
-							
-							items.active = false;
-						}
-						break;
-					
-					}
-					else {
-						std::cout << "No Collision";
-					}
+				temptr->rayhit.hit = true;
+				temptr->currhit_id = ObstaclesStorage[obstacle].Obstacle_id;
+				temptr->rayhit.point.x = PoI.x;
+				temptr->rayhit.point.y = PoI.y;
+			
+				P1toP2 = { ObstaclesStorage[obstacle].Obstacle_P2.x - ObstaclesStorage[obstacle].Obstacle_P1.x, ObstaclesStorage[obstacle].Obstacle_P2.y - ObstaclesStorage[obstacle].Obstacle_P1.y };
+				Reflect = Vector2Reflect(Vector2Normalize(temptr->Dir), Vector2Normalize({ -P1toP2.y, P1toP2.x }));
 
+				//need solution for when the laser leaves the obstacle and create new object and delete the old one
+				if (!ObstaclesStorage[obstacle].active) {
+					//std::cout << "current prev Values-> " << prev_Values.back() << "\n";
+					if (laser_manager.objectCount > 11) {
+						break;
+					}
+					Vector2 start = { temptr->rayhit.point.x , temptr->rayhit.point.y };
+					temp_Anchor = laser_manager.addLaser(start, Reflect, rayhits, thickness, color);
+					ObstaclesStorage[obstacle].active = true;
+				}
+				else {
+					if (onHit) {
+						ObstaclesStorage[obstacle].active = false;
+					}
+					
+					
+				}
+				
+				break;
+				
+			}else {
+				temptr->currhit_id = 0;
+				temptr->rayhit.hit = false;
 			}
+			
+		}
+		//NOTE MAKING PROGRESS
+		//std::cout << "Anchor ID: " << temp_Anchor->currhit_id << "  Prev ID: " << prevhit_id << "\n";
+		if (temptr != nullptr || onHit) {
+
+			laser_manager.deleteLaser(temp_Anchor);
+			if (onHit) {
+				std::cout << "\nDelete\n";
+			}
+			//std::cout << "\nDelete\n";
+			std::cout << "\nObject Count: " << laser_manager.objectCount << "\n";
+		}
+		/*if (onHit) {
+			laser_manager.deleteLaser(temp_Anchor);
+			std::cout << "Delete Change of collision\n";
+			//std::cout << "Object Count: " << laser_manager.objectCount << "\n";
+		}*/
 		
-		std::cout << "Next";
+		
+		
 		temptr = temptr->next;
-		
-	} while (temptr != NULL);
-	std::cout << "END of loop\n";
-	//why its not making object here????
-	std::cout << "\prevhit: " << prevhit_id << "\n";
-	std::cout << "\currhit: " << currhit_id << "\n";
-	/*if (prevhit_id != currhit_id && onHit) {
-		std::cout << "\nNew Node added to the list\n";
-		laser_manager.SetAnchor_Laser(laser_manager.addLaser(0, PoI, Reflect, rayhits, thickness, color));
-		prevhit_id = currhit_id;
-		onHit = false;
-	}
-	else {
-		std::cout << "\nAlready collided:\n";
-	}*/
+	} while (temptr != nullptr);
 	
-	
-	
+
 }
+
+
 
 void Simulation::DrawSimulation()
 {
-	laser_manager.Draw();
+	
 	
 	for (auto& items: ObstaclesStorage) {
 
 		items.Draw();
 	}
+	laser_manager.Draw();
+}
+
+void Simulation::DetectChangeCollision()
+{
+	//solve this tomorrow
+
+	if (temp_Anchor->currhit_id != prev_Values.back() && !prev_Values.empty()) {
+		
+		std::cout << " change of ID\n";
+		onHit = true;
+		prevhit_id = prev_Values.back();
+		
+	}
+	else {
+		onHit = false;
+	}
+
+	if (prev_Values.size() > 13) {
+		prev_Values.erase(prev_Values.begin());
+	}
+	else {
+		prev_Values.push_back(temp_Anchor->currhit_id);
+	}
 	
+	
+	
+	std::cout << "Anchor current hit ID-> " << temp_Anchor->currhit_id << "Previous Hit-> " << prevhit_id << "\n";
+	std::cout << "Anchor actual ID-> " << temp_Anchor->id << "\n";
+
 }
 
 
@@ -168,3 +206,51 @@ std::vector<Obstacle> Simulation::ShapeCreation()
 
 	return temp_storage;
 }
+
+
+
+//DON'T DELETE THIS 
+/*for (auto& items : ObstaclesStorage) {
+			//Fix it so when the anchor laser moves the other parts moves too :HOW TO FUCKING DO THIS
+			if (collisionChecker.DetectCollision(items, temptr)) {
+				PoI = collisionChecker.PointOfIntersection(items.Obstacle_P1, items.Obstacle_P2, collisionChecker.t, collisionChecker.u);
+				temptr->rayhit.hit = true;
+				currhit_id = items.Obstacle_id;
+				rayhits.point.x = PoI.x;
+				rayhits.point.y = PoI.y;
+				temptr->rayhit.point.x = PoI.x;
+				temptr->rayhit.point.y = PoI.y;
+				rayhits.hit = false;
+				P1toP2 = { items.Obstacle_P2.x - items.Obstacle_P1.x, items.Obstacle_P2.y - items.Obstacle_P1.y };
+				Reflect = Vector2Reflect(Vector2Normalize(temptr->Dir), Vector2Normalize({ -P1toP2.y, P1toP2.x }));
+				thickness = 1.0f;
+				color = RED;
+
+
+				//need solution for when the laser leaves the obstacle and create new object and delete the old one
+				if (!items.active){
+					if (laser_manager.objectCount > 11) {
+
+						break;
+					}
+					Vector2 start = { temptr->rayhit.point.x , temptr->rayhit.point.y };
+					temp_Anchor = laser_manager.addLaser(start, Reflect, rayhits, thickness, color);
+
+					items.active = true;
+				}
+				else {
+
+					items.active = false;
+				}
+
+				break;
+			}
+
+			else {
+
+				temptr->rayhit.hit = false;
+			}
+			//fix this shit its not detecting the correct change of id
+			onHit = items.active;
+			prevhit_id = items.Obstacle_id
+		}*/

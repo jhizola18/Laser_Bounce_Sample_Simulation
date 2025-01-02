@@ -10,9 +10,9 @@ Collision::Collision()
 //create a well structured collision detection for the ray and the obstacles
 /*Study the line intersection please or at least how it works*/
 /*Also the reflection formula where Vreflect = d - 2(scalarproj) * Normal*/
-bool Collision::DetectCollision(Obstacle& obs, Laser* laser)
+bool Collision::DetectCollision(Obstacle& obs, Laser* &laser)
 {
-	if (IntersectingLines(obs, *laser)) {
+	if (IntersectingLines(obs, laser)) {
 		return true;
 	}
 	else {
@@ -21,17 +21,17 @@ bool Collision::DetectCollision(Obstacle& obs, Laser* laser)
 	
 }
 
-bool Collision::IntersectingLines(Obstacle& obs, Laser& laser)
+bool Collision::IntersectingLines(Obstacle& obs, Laser* &laser)
 {
 	const float x1 = obs.Obstacle_P1.x;
 	const float y1 = obs.Obstacle_P1.y;
 	const float x2 = obs.Obstacle_P2.x;
 	const float y2 = obs.Obstacle_P2.y;
 
-	float x3 = laser.StartPos.x;
-	float y3 = laser.StartPos.y;
-	float x4 = laser.StartPos.x + laser.Dir.x;
-	float y4 = laser.StartPos.y + laser.Dir.y;
+	float x3 = laser->StartPos.x;
+	float y3 = laser->StartPos.y;
+	float x4 = laser->StartPos.x + laser->Dir.x;
+	float y4 = laser->StartPos.y + laser->Dir.y;
 
 	const float denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
 	
