@@ -1,5 +1,8 @@
 #include "Simulation.h"
 
+float runningTime = 1.0f / 12.0f;
+float updateTime = 0.0f;
+
 Simulation::Simulation()
 	:
 	laser_manager(),
@@ -49,56 +52,47 @@ void Simulation::MainSimulation()
 			
 				P1toP2 = { ObstaclesStorage[obstacle].Obstacle_P2.x - ObstaclesStorage[obstacle].Obstacle_P1.x, ObstaclesStorage[obstacle].Obstacle_P2.y - ObstaclesStorage[obstacle].Obstacle_P1.y };
 				Reflect = Vector2Reflect(Vector2Normalize(temptr->Dir), Vector2Normalize({ -P1toP2.y, P1toP2.x }));
+				std::cout << " Current State of the obstacle: " << ObstaclesStorage[obstacle].active << "\n";
 
 				//need solution for when the laser leaves the obstacle and create new object and delete the old one
-				if (!ObstaclesStorage[obstacle].active) {
+				if (!ObstaclesStorage[obstacle].active || temp_Anchor->next == nullptr) {
 					//std::cout << "current prev Values-> " << prev_Values.back() << "\n";
 					if (laser_manager.objectCount > 11) {
 						break;
 					}
+					//with the changes on deleting its not properly spawning new object
 					Vector2 start = { temptr->rayhit.point.x , temptr->rayhit.point.y };
 					temp_Anchor = laser_manager.addLaser(start, Reflect, rayhits, thickness, color);
 					ObstaclesStorage[obstacle].active = true;
+
 				}
-				else {
-					if (onHit) {
+				else{
+					/*if (onHit) {
 						ObstaclesStorage[obstacle].active = false;
-					}
+					}*/
 					
-					
+					ObstaclesStorage[obstacle].active = false;
 				}
-				
 				break;
-				
 			}else {
 				temptr->currhit_id = 0;
 				temptr->rayhit.hit = false;
 			}
+			if (temptr != nullptr) {
+				if (temp_Anchor->rayhit.hit == false) {
+					laser_manager.deleteLaser(temp_Anchor);
+					std::cout << "\nDelete\n";
+					std::cout << "\nObject Count: " << laser_manager.objectCount << "\n";
+				}
+				laser_manager.DeleteInChange(temp_Anchor->currhit_id, prevhit_id, temp_Anchor);
+				std::cout << "\nObject Count on change of collision: " << laser_manager.objectCount << "\n";
 			
-		}
-		//NOTE MAKING PROGRESS
-		//std::cout << "Anchor ID: " << temp_Anchor->currhit_id << "  Prev ID: " << prevhit_id << "\n";
-		if (temptr != nullptr || onHit) {
-
-			laser_manager.deleteLaser(temp_Anchor);
-			if (onHit) {
-				std::cout << "\nDelete\n";
 			}
-			//std::cout << "\nDelete\n";
-			std::cout << "\nObject Count: " << laser_manager.objectCount << "\n";
 		}
-		/*if (onHit) {
-			laser_manager.deleteLaser(temp_Anchor);
-			std::cout << "Delete Change of collision\n";
-			//std::cout << "Object Count: " << laser_manager.objectCount << "\n";
-		}*/
-		
-		
-		
-		temptr = temptr->next;
-	} while (temptr != nullptr);
 	
-
+		temptr = temptr->next;
+		
+	} while (temptr != nullptr);
 }
 
 
@@ -123,19 +117,18 @@ void Simulation::DetectChangeCollision()
 		std::cout << " change of ID\n";
 		onHit = true;
 		prevhit_id = prev_Values.back();
-		
+
 	}
 	else {
 		onHit = false;
+		
 	}
-
 	if (prev_Values.size() > 13) {
 		prev_Values.erase(prev_Values.begin());
 	}
 	else {
 		prev_Values.push_back(temp_Anchor->currhit_id);
 	}
-	
 	
 	
 	std::cout << "Anchor current hit ID-> " << temp_Anchor->currhit_id << "Previous Hit-> " << prevhit_id << "\n";

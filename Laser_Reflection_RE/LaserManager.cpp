@@ -90,41 +90,17 @@ void LaserManager::deleteLaser(Laser* &Anchor)
 	}
 	else {
 		return;
-		//DELETING NODE WHEN ONE OF THE NODE IS NOT COLLIDING TO ANY OBSTACLE
-		/*Laser* temptr = Anchor;
-			if (temptr != nullptr && temptr->id != 1) {
-				for (uint32_t Node = 0; Node < idtoDelete - 2; ++Node) {
-					if (temptr->next == nullptr) {
-						break;
-					}
-					else {
-						temptr = temptr->next;
-					}
-				}
-					while (temptr->next != nullptr) {
-						store = temptr->next;
-						temptr->next = store->next;
-						//std::cout << " Object deleted:Second Type ID-> " << temptr->id << "\n";
-						//std::cout << "Second type of deleting\n";
-						delete store;
-						std::cout << "\nDeleted in Middle\n";
-						objectCount--;
-					}
-				}
-				else {
-					return;
-				}*/
 	}
 }
 
-void LaserManager::DeleteInChange(uint32_t& currId, uint32_t prevId)
+void LaserManager::DeleteInChange(uint32_t& currId, uint32_t prevId, Laser* &Anchor)
 {
-	if (currId > prevId) {
+	if (currId != prevId && Anchor != nullptr) {
 		
-		deleteLaser(Anchor_Laser);
-
-	}
-	else {
+		deleteLaser(Anchor);
+		std::cout << "Delete on change of collision";
+	}else {
+		
 		return;
 	}
 }

@@ -13,7 +13,7 @@ public:
 
 	Laser* addLaser(Vector2 Start, Vector2 End, RayCollision rayhits, float thickness, Color colors);
 	void deleteLaser(Laser* &Anchor);
-	void DeleteInChange(uint32_t& currId, uint32_t prevId);
+	void DeleteInChange(uint32_t& currId, uint32_t prevId, Laser*& Anchor);
 	void Draw();
 	void AnchorMovement();
 	void InitLaserManager();
