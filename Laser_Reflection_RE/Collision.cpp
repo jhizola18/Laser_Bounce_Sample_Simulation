@@ -55,6 +55,7 @@ bool Collision::IntersectingLines(Obstacle& obs, Laser* &laser)
 	}
 }
 
+//return the value of point of intersection 
 Vector2 Collision::PointOfIntersection(Vector2 P1, Vector2 P2, float t , float u) {
 
 	Vector2 pointOfIntersection = {0};

@@ -30,6 +30,7 @@ public:
 	Vector2 StartPos;
 	Vector2 Dir;
 	RayCollision rayhit;
+	bool change_of_obj_collision;
 	float thick;
 	Color color;
 

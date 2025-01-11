@@ -8,6 +8,7 @@ Laser::Laser()//default constructor
 	rayhit = {0};
 	StartPos = {0.0f, 0.0f};
 	Dir = Vector2Normalize({ 0.0f, 0.0f });
+	change_of_obj_collision = false;
 	thick = 0.0f;
 	color = RED;
 	next = NULL;
@@ -22,6 +23,7 @@ Laser::Laser(uint32_t id, Vector2 Start, Vector2 direction, RayCollision rayhits
 	this->StartPos = Start;
 	this->Dir = direction;
 	this->rayhit = rayhits;
+	this->change_of_obj_collision = false;
 	this->thick = thickness;
 	this->color = colors;
 	this->next = NULL;

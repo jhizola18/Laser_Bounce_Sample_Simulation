@@ -18,7 +18,6 @@ int main() {
 
 		Laser_Simulation.MainSimulation();
 		Laser_Simulation.MovementSimulation();
-		Laser_Simulation.DetectChangeCollision();
 		BeginDrawing();
 		ClearBackground(BLACK);
 		Laser_Simulation.DrawSimulation();

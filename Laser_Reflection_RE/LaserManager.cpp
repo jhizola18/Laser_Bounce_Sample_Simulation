@@ -43,7 +43,6 @@ Laser* LaserManager::addLaser(Vector2 Start, Vector2 End, RayCollision rayhits, 
 		laser_temptr->color = colors;
 		objectCount++;
 	
-		return Anchor_Laser;
 	}else {
 		
 		Laser* temptr = Anchor_Laser;
@@ -62,9 +61,9 @@ Laser* LaserManager::addLaser(Vector2 Start, Vector2 End, RayCollision rayhits, 
 		laser_temptr->rayhit.hit = rayhits.hit;
 		laser_temptr->thick = thickness;
 		laser_temptr->color = colors;
-		return Anchor_Laser;
+		
 	}
-	
+	return Anchor_Laser;
 }
 
 void LaserManager::deleteLaser(Laser* &Anchor)
@@ -82,9 +81,9 @@ void LaserManager::deleteLaser(Laser* &Anchor)
 			if (store->next != nullptr) {
 				store->next->prev = temp;
 			}
-			std::cout << "Deleted ID: " << store->id << "\n";
+			//std::cout << "Deleted ID: " << store->id << "\n";
 			delete store;
-			std::cout << "\nDeleted all Tail\n";
+			//std::cout << "\nDeleted all Tail\n";
 			objectCount--;
 		}
 	}
@@ -96,11 +95,8 @@ void LaserManager::deleteLaser(Laser* &Anchor)
 void LaserManager::DeleteInChange(uint32_t& currId, uint32_t prevId, Laser* &Anchor)
 {
 	if (currId != prevId && Anchor != nullptr) {
-		
 		deleteLaser(Anchor);
-		std::cout << "Delete on change of collision";
 	}else {
-		
 		return;
 	}
 }
@@ -130,16 +126,23 @@ void LaserManager::Draw()
 
 void LaserManager::AnchorMovement()
 {
+
 	if (IsCursorOnScreen()) {
 
 		float AnchorNewX = GetMousePosition().x - Anchor_Laser->StartPos.x;
 		float AnchorNewY = GetMousePosition().y - Anchor_Laser->StartPos.y;
 
-		Vector2 NewAnchorPos = Vector2Normalize({AnchorNewX, AnchorNewY});
+		Vector2 NewAnchorPos = Vector2Normalize({ AnchorNewX, AnchorNewY });
 		Anchor_Laser->Dir.x = NewAnchorPos.x;
 		Anchor_Laser->Dir.y = NewAnchorPos.y;
+
+
+			
 	}
+
 }
+
+
 
 void LaserManager::InitLaserManager()
 {
@@ -152,7 +155,9 @@ void LaserManager::InitLaserManager()
 	Anchor_Laser = addLaser(start ,end, rayhits, thick, color);
 }
 
-Laser* const& LaserManager::GetAnchor_Laser() const
+
+
+Laser* LaserManager::GetAnchor_Laser() const
 {
 	return Anchor_Laser;
 }

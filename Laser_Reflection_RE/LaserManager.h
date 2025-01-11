@@ -19,7 +19,7 @@ public:
 	void InitLaserManager();
 	uint32_t objectCount;
 	uint32_t objectDrawn;
-	Laser* const& GetAnchor_Laser() const;
+	Laser* GetAnchor_Laser() const;
 	void SetAnchor_Laser(Laser* Anchor);
 
 };

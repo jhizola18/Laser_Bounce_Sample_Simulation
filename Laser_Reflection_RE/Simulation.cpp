@@ -1,6 +1,6 @@
 #include "Simulation.h"
 
-float runningTime = 1.0f / 12.0f;
+float runningTime = 1.0f / 5.0f;
 float updateTime = 0.0f;
 
 Simulation::Simulation()
@@ -19,6 +19,9 @@ Simulation::Simulation()
 Simulation::~Simulation() noexcept 
 {
 	temp_Anchor = nullptr;
+	for (uint32_t obstacle = 0; obstacle < ObstaclesStorage.size(); ++obstacle) {
+		ObstaclesStorage.pop_back();
+	}
 }
 void Simulation::MainSimulation() 
 {
@@ -30,109 +33,88 @@ void Simulation::MainSimulation()
 	RayCollision rayhits = { 0 };
 	float thickness = 0.0f;
 	Color color = WHITE;
+	
 	do {
 		
 		if (temptr == nullptr) {
 			break;
 		}
+	
 		for (size_t obstacle = 0; obstacle < ObstaclesStorage.size(); ++obstacle) {
-			//Fix it so when the anchor laser moves the other parts moves too :HOW TO FUCKING DO THIS
+			
 			if (collisionChecker.DetectCollision(ObstaclesStorage[obstacle], temptr)) {
-				PoI = collisionChecker.PointOfIntersection(ObstaclesStorage[obstacle].Obstacle_P1, ObstaclesStorage[obstacle].Obstacle_P2, collisionChecker.t, collisionChecker.u);
 				thickness = 1.0f;
 				color = RED;
-				rayhits.point.x = PoI.x;
-				rayhits.point.y = PoI.y;
 				rayhits.hit = false;
+				temptr->currhit_id = ObstaclesStorage[obstacle].Obstacle_id;
 				
 				temptr->rayhit.hit = true;
-				temptr->currhit_id = ObstaclesStorage[obstacle].Obstacle_id;
 				temptr->rayhit.point.x = PoI.x;
 				temptr->rayhit.point.y = PoI.y;
-			
 				P1toP2 = { ObstaclesStorage[obstacle].Obstacle_P2.x - ObstaclesStorage[obstacle].Obstacle_P1.x, ObstaclesStorage[obstacle].Obstacle_P2.y - ObstaclesStorage[obstacle].Obstacle_P1.y };
 				Reflect = Vector2Reflect(Vector2Normalize(temptr->Dir), Vector2Normalize({ -P1toP2.y, P1toP2.x }));
-				std::cout << " Current State of the obstacle: " << ObstaclesStorage[obstacle].active << "\n";
-
-				//need solution for when the laser leaves the obstacle and create new object and delete the old one
-				if (!ObstaclesStorage[obstacle].active || temp_Anchor->next == nullptr) {
-					//std::cout << "current prev Values-> " << prev_Values.back() << "\n";
-					if (laser_manager.objectCount > 11) {
+				
+				if (!ObstaclesStorage[obstacle].active) {
+					
+				
+					if (laser_manager.objectCount >= 11) {
 						break;
 					}
-					//with the changes on deleting its not properly spawning new object
 					Vector2 start = { temptr->rayhit.point.x , temptr->rayhit.point.y };
 					temp_Anchor = laser_manager.addLaser(start, Reflect, rayhits, thickness, color);
 					ObstaclesStorage[obstacle].active = true;
-
 				}
-				else{
-					/*if (onHit) {
-						ObstaclesStorage[obstacle].active = false;
-					}*/
+				else {
 					
 					ObstaclesStorage[obstacle].active = false;
 				}
+				
 				break;
 			}else {
 				temptr->currhit_id = 0;
 				temptr->rayhit.hit = false;
-			}
-			if (temptr != nullptr) {
-				if (temp_Anchor->rayhit.hit == false) {
-					laser_manager.deleteLaser(temp_Anchor);
-					std::cout << "\nDelete\n";
-					std::cout << "\nObject Count: " << laser_manager.objectCount << "\n";
-				}
-				laser_manager.DeleteInChange(temp_Anchor->currhit_id, prevhit_id, temp_Anchor);
-				std::cout << "\nObject Count on change of collision: " << laser_manager.objectCount << "\n";
-			
+				
 			}
 		}
-	
-		temptr = temptr->next;
+		if (temp_Anchor->rayhit.hit == false) {
+			laser_manager.deleteLaser(temp_Anchor);
+		}
 		
+		temptr = temptr->next;
+	
 	} while (temptr != nullptr);
+	
+	
 }
 
 
 
 void Simulation::DrawSimulation()
 {
-	
-	
+	laser_manager.Draw();
 	for (auto& items: ObstaclesStorage) {
 
 		items.Draw();
 	}
-	laser_manager.Draw();
+	
 }
 
 void Simulation::DetectChangeCollision()
 {
-	//solve this tomorrow
-
-	if (temp_Anchor->currhit_id != prev_Values.back() && !prev_Values.empty()) {
-		
-		std::cout << " change of ID\n";
-		onHit = true;
+	if (temp_Anchor->currhit_id != prev_Values.back()) {
 		prevhit_id = prev_Values.back();
-
 	}
-	else {
-		onHit = false;
+	else if(temp_Anchor->currhit_id == prev_Values.back()){
 		
+		temp_Anchor->currhit_id = temp_Anchor->currhit_id;
 	}
+
 	if (prev_Values.size() > 13) {
 		prev_Values.erase(prev_Values.begin());
 	}
 	else {
 		prev_Values.push_back(temp_Anchor->currhit_id);
 	}
-	
-	
-	std::cout << "Anchor current hit ID-> " << temp_Anchor->currhit_id << "Previous Hit-> " << prevhit_id << "\n";
-	std::cout << "Anchor actual ID-> " << temp_Anchor->id << "\n";
 
 }
 
@@ -140,6 +122,65 @@ void Simulation::DetectChangeCollision()
 void Simulation::MovementSimulation()
 {
 	laser_manager.AnchorMovement();
+	UpdateSimulation();
+}
+
+//solve this updating problem
+void Simulation::UpdateSimulation()
+{
+	Laser* temp = temp_Anchor->next;
+	Vector2 reflect = {0};
+	Vector2 P1toP2 = {0};
+	Vector2 PoI = {0};
+	bool near = false;
+	do {
+		if (temp == nullptr) {
+			break;
+		}
+	
+				for (size_t obstacle = 0; obstacle < ObstaclesStorage.size(); ++obstacle) {
+					float record = std::numeric_limits<float>::infinity();
+					Vector2 closest = { 0 };
+					near = false;
+					if (collisionChecker.DetectCollision(ObstaclesStorage[obstacle], temp->prev)) {
+						PoI = collisionChecker.PointOfIntersection(ObstaclesStorage[obstacle].Obstacle_P1, ObstaclesStorage[obstacle].Obstacle_P2, collisionChecker.t, collisionChecker.u);
+						float distance = Vector2Distance(temp->StartPos, PoI);
+						if (distance < record) {
+
+							record = distance;
+							closest = PoI;
+							near = true;
+						}
+						else {
+							false;
+						}
+						
+						if (near) {
+							temp->prev->rayhit.point.x = closest.x;
+							temp->prev->rayhit.point.y = closest.y;
+						}
+						else {
+							temp->prev->rayhit.point.x = PoI.x;
+							temp->prev->rayhit.point.y = PoI.y;
+						}
+						
+
+						P1toP2 = Vector2Subtract(ObstaclesStorage[obstacle].Obstacle_P2, ObstaclesStorage[obstacle].Obstacle_P1);
+						reflect = Vector2Reflect(Vector2Normalize(temp->prev->Dir), Vector2Normalize({ -P1toP2.y, P1toP2.x }));
+						temp->StartPos = { temp->prev->rayhit.point.x,temp->prev->rayhit.point.y };
+						temp->Dir = reflect;
+						break;
+					}
+					
+				}
+			
+			temp = temp->next;
+		} while (temp != nullptr);
+
+		
+	
+		
+	
 }
 
 
@@ -172,8 +213,15 @@ std::vector<Obstacle> Simulation::ShapeCreation()
 	temp_storage.push_back(obstacle1);
 
 	//Plane 2 Checker for clipping outside the collision
-	Vector2 P3Checker = { 200.0f, 300.0f };
-	Vector2 P4Checker = { 200.0f, 500.0f };
+	srand(time(0));
+
+	float minRandX = rand() % 200;
+	float minRandY = rand() % 200;
+	float maxRandX = rand() % 700;
+	float maxRandY = rand() % 700;
+	
+	Vector2 P3Checker = { minRandX, minRandY };
+	Vector2 P4Checker = { maxRandX, maxRandY };
 	uint32_t id4 = 4;
 	Obstacle obstacle1Checker = Obstacle(id4,P3Checker, P4Checker);
 

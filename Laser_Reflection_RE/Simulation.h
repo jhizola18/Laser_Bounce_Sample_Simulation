@@ -5,7 +5,7 @@
 #include "raymath.h"
 #include "Obstacle.h"
 #include "Vector"
-
+#include "limits"
 
 class Simulation {
 private:
@@ -21,6 +21,7 @@ public://functions and methods
 	void DrawSimulation();
 	void DetectChangeCollision();
 	void MovementSimulation();
+	void UpdateSimulation();
 
 	std::vector<Obstacle> ShapeCreation();
 	std::vector<uint32_t> prev_Values;
