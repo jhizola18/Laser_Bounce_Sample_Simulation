@@ -9,7 +9,7 @@ private:
 public:
 	Collision();
 	bool DetectCollision(Obstacle& obs, Laser* &laser);
-	Vector2 PointOfIntersection(Vector2 P1, Vector2 P2, float t, float u);
+	Vector2 PointOfIntersection(Vector2 P1, Vector2 P2, float t);
 
 public:
 

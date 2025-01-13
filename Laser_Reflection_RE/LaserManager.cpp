@@ -104,13 +104,11 @@ void LaserManager::DeleteInChange(uint32_t& currId, uint32_t prevId, Laser* &Anc
 void LaserManager::Draw()
 {
 	Laser* temptr = Anchor_Laser;
-	//std::cout << "\nNodes Created->" << objectCount << "\n";
 	Anchor_Laser->Draw();
-	while (temptr != nullptr) {
-		
-		if (temptr->rayhit.hit == true && temptr->next != nullptr)
+	while (temptr->next != nullptr) {
+
+		if (temptr->rayhit.hit == true)
 		{
-				//std::cout << "Draw Laser-> " << temptr->id << "\n";
 				temptr->next->Draw();
 				Vector2 PoI = { temptr->rayhit.point.x, temptr->rayhit.point.y };
 				DrawCircleV(PoI, 3.0f, GREEN);
@@ -118,6 +116,7 @@ void LaserManager::Draw()
 		else {
 			break;
 		}
+		
 		temptr = temptr->next;
 	}
 		
@@ -135,9 +134,6 @@ void LaserManager::AnchorMovement()
 		Vector2 NewAnchorPos = Vector2Normalize({ AnchorNewX, AnchorNewY });
 		Anchor_Laser->Dir.x = NewAnchorPos.x;
 		Anchor_Laser->Dir.y = NewAnchorPos.y;
-
-
-			
 	}
 
 }

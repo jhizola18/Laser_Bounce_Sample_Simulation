@@ -7,6 +7,8 @@
 #include "Vector"
 #include "limits"
 
+#define MAX_BOUNCE 11
+
 class Simulation {
 private:
 	LaserManager laser_manager;

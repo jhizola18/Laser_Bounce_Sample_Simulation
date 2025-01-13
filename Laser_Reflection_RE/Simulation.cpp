@@ -43,6 +43,7 @@ void Simulation::MainSimulation()
 		for (size_t obstacle = 0; obstacle < ObstaclesStorage.size(); ++obstacle) {
 			
 			if (collisionChecker.DetectCollision(ObstaclesStorage[obstacle], temptr)) {
+				PoI = collisionChecker.PointOfIntersection(ObstaclesStorage[obstacle].Obstacle_P1, ObstaclesStorage[obstacle].Obstacle_P2, collisionChecker.t);
 				thickness = 1.0f;
 				color = RED;
 				rayhits.hit = false;
@@ -57,7 +58,7 @@ void Simulation::MainSimulation()
 				if (!ObstaclesStorage[obstacle].active) {
 					
 				
-					if (laser_manager.objectCount >= 11) {
+					if (laser_manager.objectCount > MAX_BOUNCE) {
 						break;
 					}
 					Vector2 start = { temptr->rayhit.point.x , temptr->rayhit.point.y };
@@ -93,7 +94,6 @@ void Simulation::DrawSimulation()
 {
 	laser_manager.Draw();
 	for (auto& items: ObstaclesStorage) {
-
 		items.Draw();
 	}
 	
@@ -136,44 +136,22 @@ void Simulation::UpdateSimulation()
 	do {
 		if (temp == nullptr) {
 			break;
-		}
-	
+		} 
 				for (size_t obstacle = 0; obstacle < ObstaclesStorage.size(); ++obstacle) {
-					float record = std::numeric_limits<float>::infinity();
-					Vector2 closest = { 0 };
-					near = false;
 					if (collisionChecker.DetectCollision(ObstaclesStorage[obstacle], temp->prev)) {
-						PoI = collisionChecker.PointOfIntersection(ObstaclesStorage[obstacle].Obstacle_P1, ObstaclesStorage[obstacle].Obstacle_P2, collisionChecker.t, collisionChecker.u);
-						float distance = Vector2Distance(temp->StartPos, PoI);
-						if (distance < record) {
-
-							record = distance;
-							closest = PoI;
-							near = true;
-						}
-						else {
-							false;
-						}
 						
-						if (near) {
-							temp->prev->rayhit.point.x = closest.x;
-							temp->prev->rayhit.point.y = closest.y;
-						}
-						else {
+							PoI = collisionChecker.PointOfIntersection(ObstaclesStorage[obstacle].Obstacle_P1, ObstaclesStorage[obstacle].Obstacle_P2, collisionChecker.t);
+						
 							temp->prev->rayhit.point.x = PoI.x;
 							temp->prev->rayhit.point.y = PoI.y;
-						}
-						
-
-						P1toP2 = Vector2Subtract(ObstaclesStorage[obstacle].Obstacle_P2, ObstaclesStorage[obstacle].Obstacle_P1);
-						reflect = Vector2Reflect(Vector2Normalize(temp->prev->Dir), Vector2Normalize({ -P1toP2.y, P1toP2.x }));
-						temp->StartPos = { temp->prev->rayhit.point.x,temp->prev->rayhit.point.y };
-						temp->Dir = reflect;
-						break;
-					}
 					
+							P1toP2 = Vector2Subtract(ObstaclesStorage[obstacle].Obstacle_P2, ObstaclesStorage[obstacle].Obstacle_P1);
+							reflect = Vector2Reflect(Vector2Normalize(temp->prev->Dir), Vector2Normalize({ -P1toP2.y, P1toP2.x }));
+							temp->StartPos = { temp->prev->rayhit.point.x,temp->prev->rayhit.point.y };
+							temp->Dir = reflect;
+							break;
+					}
 				}
-			
 			temp = temp->next;
 		} while (temp != nullptr);
 
@@ -213,12 +191,11 @@ std::vector<Obstacle> Simulation::ShapeCreation()
 	temp_storage.push_back(obstacle1);
 
 	//Plane 2 Checker for clipping outside the collision
-	srand(time(0));
 
-	float minRandX = rand() % 200;
-	float minRandY = rand() % 200;
-	float maxRandX = rand() % 700;
-	float maxRandY = rand() % 700;
+	float minRandX = GetRandomValue(100.0f, 200.0f);
+	float minRandY = GetRandomValue(100.0f, 200.0f);
+	float maxRandX = GetRandomValue(200.0f, 700.0f);
+	float maxRandY = GetRandomValue(200.0f, 700.0f);
 	
 	Vector2 P3Checker = { minRandX, minRandY };
 	Vector2 P4Checker = { maxRandX, maxRandY };
@@ -247,51 +224,3 @@ std::vector<Obstacle> Simulation::ShapeCreation()
 
 	return temp_storage;
 }
-
-
-
-//DON'T DELETE THIS 
-/*for (auto& items : ObstaclesStorage) {
-			//Fix it so when the anchor laser moves the other parts moves too :HOW TO FUCKING DO THIS
-			if (collisionChecker.DetectCollision(items, temptr)) {
-				PoI = collisionChecker.PointOfIntersection(items.Obstacle_P1, items.Obstacle_P2, collisionChecker.t, collisionChecker.u);
-				temptr->rayhit.hit = true;
-				currhit_id = items.Obstacle_id;
-				rayhits.point.x = PoI.x;
-				rayhits.point.y = PoI.y;
-				temptr->rayhit.point.x = PoI.x;
-				temptr->rayhit.point.y = PoI.y;
-				rayhits.hit = false;
-				P1toP2 = { items.Obstacle_P2.x - items.Obstacle_P1.x, items.Obstacle_P2.y - items.Obstacle_P1.y };
-				Reflect = Vector2Reflect(Vector2Normalize(temptr->Dir), Vector2Normalize({ -P1toP2.y, P1toP2.x }));
-				thickness = 1.0f;
-				color = RED;
-
-
-				//need solution for when the laser leaves the obstacle and create new object and delete the old one
-				if (!items.active){
-					if (laser_manager.objectCount > 11) {
-
-						break;
-					}
-					Vector2 start = { temptr->rayhit.point.x , temptr->rayhit.point.y };
-					temp_Anchor = laser_manager.addLaser(start, Reflect, rayhits, thickness, color);
-
-					items.active = true;
-				}
-				else {
-
-					items.active = false;
-				}
-
-				break;
-			}
-
-			else {
-
-				temptr->rayhit.hit = false;
-			}
-			//fix this shit its not detecting the correct change of id
-			onHit = items.active;
-			prevhit_id = items.Obstacle_id
-		}*/
