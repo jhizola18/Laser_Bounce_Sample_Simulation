@@ -5,5 +5,6 @@ Note: There is a bug when ray tracing detecting for line intersection, some part
 
 
 The bug:
-![Uploading image.png…]()
+![image](https://github.com/user-attachments/assets/f4d3b384-3a05-4576-927a-8ab4b97fea4d)
+
 
